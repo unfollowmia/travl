@@ -11,6 +11,8 @@ export default function ReviewScreen() {
   const depAirport = getAirportByCode(reservation.departureAirport);
   const destAirport = getAirportByCode(reservation.destinationAirport);
 
+  const setField = useReservationStore((s) => s.setField);
+
   const handleConfirm = () => {
     setField('status', 'processing');
     // Placeholder: will integrate with payment flow
@@ -18,8 +20,6 @@ export default function ReviewScreen() {
     router.back();
     router.back();
   };
-
-  const setField = useReservationStore((s) => s.setField);
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
