@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "travl",
+    "slug": "travl",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "scheme": "travl",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.travl.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0A1628",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "splash": {
+      "backgroundColor": "#0A1628"
+    },
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}
