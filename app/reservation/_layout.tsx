@@ -38,6 +38,29 @@ export default function ReservationLayout() {
         name="passenger"
         options={{ title: 'Passenger' }}
       />
+      <Stack.Screen
+        name="review"
+        options={{
+          title: 'Review',
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={styles.backButton}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Text style={styles.backText}>‹ Back</Text>
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="result"
+        options={{
+          title: 'Reservation',
+          headerShown: false,
+          gestureEnabled: false,
+        }}
+      />
     </Stack>
   );
 }
@@ -49,5 +72,12 @@ const styles = StyleSheet.create({
   cancelText: {
     ...Typography.body,
     color: Colors.systemGray2,
+  },
+  backButton: {
+    paddingHorizontal: Spacing.sm,
+  },
+  backText: {
+    ...Typography.body,
+    color: Colors.white,
   },
 });

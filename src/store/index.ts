@@ -4,6 +4,7 @@ export type {
   Passenger,
   ReservationStatus,
   ReservationState,
+  ReservationResponse,
 } from './useReservationStore';
 
 export { usePassengerStore } from './usePassengerStore';
