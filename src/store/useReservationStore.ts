@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { reservationService, type ReservationResponse } from '../services/reservation';
 
 export type TripType = 'one-way' | 'return';
 
@@ -18,6 +19,7 @@ export type ReservationStatus =
   | 'failed';
 
 export interface ReservationState {
+  // Form fields
   departureAirport: string;
   destinationAirport: string;
   travelDate: string;
@@ -25,16 +27,26 @@ export interface ReservationState {
   tripType: TripType;
   passenger: Passenger;
   status: ReservationStatus;
-  pnr: string;
 
+  // Reservation response (populated after successful submission)
+  pnr: string;
+  airlineName: string;
+  flightNumber: string;
+  departureTime: string;
+  arrivalTime: string;
+  bookingReference: string;
+
+  // Actions
   setField: <K extends keyof ReservationState>(
     key: K,
-    value: ReservationState[K]
+    value: ReservationState[K],
   ) => void;
   setPassengerField: <K extends keyof Passenger>(
     key: K,
-    value: Passenger[K]
+    value: Passenger[K],
   ) => void;
+  setReservationResponse: (response: ReservationResponse) => void;
+  submitReservation: () => Promise<void>;
   resetReservation: () => void;
 }
 
@@ -45,7 +57,7 @@ const initialPassenger: Passenger = {
   dateOfBirth: '',
 };
 
-const initialState = {
+const initialReservationFields = {
   departureAirport: '',
   destinationAirport: '',
   travelDate: '',
@@ -54,10 +66,15 @@ const initialState = {
   passenger: { ...initialPassenger },
   status: 'idle' as ReservationStatus,
   pnr: '',
+  airlineName: '',
+  flightNumber: '',
+  departureTime: '',
+  arrivalTime: '',
+  bookingReference: '',
 };
 
-export const useReservationStore = create<ReservationState>((set) => ({
-  ...initialState,
+export const useReservationStore = create<ReservationState>((set, get) => ({
+  ...initialReservationFields,
 
   setField: (key, value) =>
     set((state) => ({
@@ -74,9 +91,52 @@ export const useReservationStore = create<ReservationState>((set) => ({
       },
     })),
 
+  setReservationResponse: (response) =>
+    set({
+      pnr: response.pnr,
+      airlineName: response.airlineName,
+      flightNumber: response.flightNumber,
+      departureTime: response.departureTime,
+      arrivalTime: response.arrivalTime,
+      bookingReference: response.bookingReference,
+      status: 'completed',
+    }),
+
+  submitReservation: async () => {
+    const state = get();
+    set({ status: 'processing' });
+
+    try {
+      const response = await reservationService.submitReservation({
+        departureAirport: state.departureAirport,
+        destinationAirport: state.destinationAirport,
+        travelDate: state.travelDate,
+        returnDate: state.returnDate || undefined,
+        tripType: state.tripType,
+        passengerName: state.passenger.name,
+        passengerPassport: state.passenger.passportNumber,
+      });
+
+      set({
+        pnr: response.pnr,
+        airlineName: response.airlineName,
+        flightNumber: response.flightNumber,
+        departureTime: response.departureTime,
+        arrivalTime: response.arrivalTime,
+        bookingReference: response.bookingReference,
+        status: 'completed',
+      });
+    } catch {
+      set({ status: 'failed' });
+    }
+  },
+
   resetReservation: () =>
     set({
-      ...initialState,
+      ...initialReservationFields,
       passenger: { ...initialPassenger },
     }),
 }));
+
+// Re-export ReservationResponse type for convenience
+export type { ReservationResponse } from '../services/reservation';
